@@ -1,51 +1,82 @@
 package main;
 
 import lombok.*;
+import scanners.FileJob;
+import scanners.ScanType;
+import scanners.ScanningJob;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class DirectoryCrawlerThread implements Runnable {
+public class DirectoryCrawlerThread extends Thread {
 
 
-    private String file_corpus_prefix;
-    private String dir_crawler_sleep_time;
-    private CopyOnWriteArrayList<String> dirsToCrawl;
-    private HashMap<String,Long> lastModifiedMap ;
-
+    private CopyOnWriteArrayList<String> dirsToCrawl = new CopyOnWriteArrayList<>();
+    private HashMap<String, Long> lastModifiedMap = new HashMap<>();
+    private BlockingQueue<ScanningJob> jobs = Main.jobs;
+    private boolean startJob = false;
+    private List<File> jobFiles = new ArrayList<>();
 
     public void crawl(File[] files) {
         for (File file : files) {
             if (file.isDirectory()) {
+                if (startJob) {
+                    try {
+                        jobs.put(new FileJob(ScanType.FILE, jobFiles));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    startJob = false;
+//                    jobFiles.clear();
+                }
                 System.out.println("Directory: " + file.getAbsolutePath());
+                jobFiles.clear();
                 crawl(file.listFiles());
-            } else if(!file.isDirectory() && file.getParentFile().getName().startsWith(file_corpus_prefix)){
-                Long lm = lastModifiedMap.putIfAbsent(file.getAbsolutePath(),file.lastModified());
-                boolean startJob = false;
-                if(lm == null || !lm.equals(file.lastModified())){
+            } else if (!file.isDirectory() && file.getParentFile().getName().startsWith(ApplicationProperties.getInstance().getPrefix())) {
+                Long lm = lastModifiedMap.putIfAbsent(file.getAbsolutePath(), file.lastModified());
+                jobFiles.add(file);
+                if (lm == null || !lm.equals(file.lastModified())) {
                     // TODO: 3.4.2021. job treba startovati
                     startJob = true;
                     System.out.println("start job");
-                }else {
+                } else {
                     // TODO: 3.4.2021. job ne treba statovati
                     System.out.println("dont start job");
-
                 }
+
                 System.out.println("File: " + file.getAbsolutePath() + " lm: " + file.lastModified());
             }
         }
     }
 
     public void run() {
-        for (String s : dirsToCrawl) {
-            File dir = new File(s);
-            crawl(dir.listFiles());
+        while (true) {
+
+            for (String s : dirsToCrawl) {
+                if(s.equals("stop")){
+                    System.out.println("DirectoryCrawlerThread stopped");
+                    return;
+                }
+                File dir = new File(s);
+                crawl(dir.listFiles());
+            }
+
+            try {
+                System.out.println("-- DirectoryCrawlerThread going to sleep");
+                // TODO: 4.4.2021. *10 da bi sporije islo izbrisati
+                Thread.sleep(Long.parseLong(ApplicationProperties.getInstance().getDir_crawler_sleep_time())*10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
 
     }

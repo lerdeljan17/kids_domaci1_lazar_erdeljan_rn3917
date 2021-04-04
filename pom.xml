@@ -18,6 +18,20 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.peichhorn</groupId>
+            <artifactId>lombok-pg</artifactId>
+            <version>0.11.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.peichhorn</groupId>
+            <artifactId>lombok-pg</artifactId>
+            <version>0.11.3</version>
+            <classifier>runtime</classifier>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
 
