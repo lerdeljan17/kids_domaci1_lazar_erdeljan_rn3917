@@ -12,10 +12,16 @@ public class JobDispatcher extends Thread{
 
                 ScanningJob job = Main.jobs.take();
 
-                // TODO: 4.4.2021. stopping
+                if(job.getType() == ScanType.FILE){
+                    FileJob fileJob = (FileJob)job;
 
-                if(job.getType() ==ScanType.FILE){
-
+                    // TODO: 4.4.2021. stopping
+                    if (fileJob.isPoison()){
+                        System.out.println("-- Shutting down JobDispatcher");
+                        return;
+                    }
+                    System.out.println("JobDispatcher took a new job wit corpus name: " + fileJob.getCorpusName());
+                    Main.fileScannerPool.submit(new FileScannerThread(fileJob.getFilesToScan()));
                 }
 
 

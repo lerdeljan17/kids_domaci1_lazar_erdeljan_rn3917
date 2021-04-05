@@ -16,9 +16,10 @@ import java.util.concurrent.Future;
 @AllArgsConstructor
 public class FileJob implements ScanningJob {
 
-
     private ScanType type = ScanType.FILE;
     private List<File> filesToScan;
+    private boolean isPoison;
+    private String corpusName;
 
     @Override
     public ScanType getType() {

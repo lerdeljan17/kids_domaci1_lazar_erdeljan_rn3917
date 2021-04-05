@@ -1,5 +1,6 @@
 package main;
 
+import scanners.JobDispatcher;
 import scanners.ScanningJob;
 
 import java.util.*;
@@ -17,7 +18,8 @@ public class Main {
     //    static List<String> dirsToCrawl = new ArrayList<String>();
     public static CopyOnWriteArrayList<String> dirsToCrawl = new CopyOnWriteArrayList();
     public static BlockingQueue<ScanningJob> jobs = new LinkedBlockingQueue<>();
-    public static ForkJoinPool fileScannerPool = new ForkJoinPool();
+    public static ForkJoinPool fileScannerPool;
+    public static JobDispatcher jobDispatcher;
 
     public static DirectoryCrawlerThread directoryCrawlerThread;
 
@@ -33,6 +35,12 @@ public class Main {
 //        );
         directoryCrawlerThread = new DirectoryCrawlerThread();
         directoryCrawlerThread.start();
+
+        jobDispatcher = new JobDispatcher();
+        jobDispatcher.start();
+
+        fileScannerPool = new ForkJoinPool();
+
 
         Scanner sc = new Scanner(System.in);
         while (true) {

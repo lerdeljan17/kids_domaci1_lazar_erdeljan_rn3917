@@ -23,14 +23,16 @@ public class DirectoryCrawlerThread extends Thread {
     private HashMap<String, Long> lastModifiedMap = new HashMap<>();
     private BlockingQueue<ScanningJob> jobs = Main.jobs;
     private boolean startJob = false;
-    private List<File> jobFiles = new ArrayList<>();
+    private List<File> jobFiles = new CopyOnWriteArrayList<>();
 
     public void crawl(File[] files) {
         for (File file : files) {
             if (file.isDirectory()) {
                 if (startJob) {
                     try {
-                        jobs.put(new FileJob(ScanType.FILE, jobFiles));
+                        List<File> toSend = new ArrayList<>();
+                        toSend.addAll(jobFiles);
+                        jobs.put(new FileJob(ScanType.FILE, toSend,false,jobFiles.get(0).getParentFile().getName()));
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -63,6 +65,11 @@ public class DirectoryCrawlerThread extends Thread {
             for (String s : dirsToCrawl) {
                 if(s.equals("stop")){
                     System.out.println("DirectoryCrawlerThread stopped");
+                    try {
+                        jobs.put(new FileJob(ScanType.FILE,null,true,null));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     return;
                 }
                 File dir = new File(s);
