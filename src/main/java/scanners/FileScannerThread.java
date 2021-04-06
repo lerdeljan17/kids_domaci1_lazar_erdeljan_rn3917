@@ -16,6 +16,7 @@ public class FileScannerThread extends  RecursiveTask<Map<String,Integer>> {
     private  Map<String,Integer> wordCountMap ;
 
     public FileScannerThread(List<File> filesToScan) {
+        this.files = new ArrayList<>(filesToScan);
         this.wordCountMap = new HashMap<>();
     }
 
@@ -23,12 +24,13 @@ public class FileScannerThread extends  RecursiveTask<Map<String,Integer>> {
     protected Map<String, Integer> compute() {
 
 
-
-        List<File> dividedFiles = divideFiles(files);
         System.out.println("computing for" + files.toString());
+        List<File> dividedFiles = divideFiles(files);
+
 
 
         if(files.size() > 0 ){
+
 
             FileScannerThread left = new FileScannerThread(files);
             FileScannerThread right = new FileScannerThread(dividedFiles);
@@ -51,15 +53,17 @@ public class FileScannerThread extends  RecursiveTask<Map<String,Integer>> {
 
             }
 
+            System.out.println("rezzz2" + wordCountMap);
             return wordCountMap;
 
         }else {
+
             scanFiles(dividedFiles);
+            System.out.println("rezzz" + wordCountMap);
+            return wordCountMap;
         }
 
 
-
-        return null;
     }
 
     private  void scanFiles(List<File> filesToscan){

@@ -2,6 +2,7 @@ package scanners;
 
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.RecursiveTask;
 
 public class StopJob implements ScanningJob{
 
@@ -16,7 +17,8 @@ public class StopJob implements ScanningJob{
     }
 
     @Override
-    public Future<Map<String, Integer>> initiate() {
+    public Future<Map<String, Integer>> initiate(RecursiveTask task) {
         return null;
     }
+
 }

@@ -2,6 +2,9 @@ package scanners;
 
 import main.Main;
 
+import java.util.Map;
+import java.util.concurrent.Future;
+
 public class JobDispatcher extends Thread{
 
     @Override
@@ -20,8 +23,10 @@ public class JobDispatcher extends Thread{
                         System.out.println("-- Shutting down JobDispatcher");
                         return;
                     }
+                    // TODO: 5.4.2021. result
                     System.out.println("JobDispatcher took a new job wit corpus name: " + fileJob.getCorpusName());
-                    Main.fileScannerPool.submit(new FileScannerThread(fileJob.getFilesToScan()));
+//                    Future<Map<String,Integer>> result = Main.fileScannerPool.submit(new FileScannerThread(fileJob.getFilesToScan()));
+                    job.initiate(new FileScannerThread(fileJob.getFilesToScan()));
                 }
 
 
