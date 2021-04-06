@@ -9,6 +9,7 @@ import main.Main;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveTask;
 
@@ -43,9 +44,15 @@ public class FileJob implements ScanningJob {
 
     @Override
     public Future<Map<String, Integer>> initiate(RecursiveTask task) {
-        System.out.println("doso do initiate");
+//        System.out.println("doso do initiate");
         this.jobResult =  Main.fileScannerPool.submit(task);
-//        System.out.println(jobResult);
+//        try {
+////            System.out.println("result for corpus " + corpusName+  " " + jobResult.get().toString());
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
         return jobResult;
     }
 

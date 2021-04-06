@@ -26,7 +26,8 @@ public class JobDispatcher extends Thread{
                     // TODO: 5.4.2021. result
                     System.out.println("JobDispatcher took a new job wit corpus name: " + fileJob.getCorpusName());
 //                    Future<Map<String,Integer>> result = Main.fileScannerPool.submit(new FileScannerThread(fileJob.getFilesToScan()));
-                    job.initiate(new FileScannerThread(fileJob.getFilesToScan()));
+                    Future<Map<String, Integer>> res = job.initiate(new FileScannerThread(fileJob.getFilesToScan()));
+                    Main.resultRetriever.addCorpusResult(((FileJob) job).getCorpusName(),res);
                 }
 
 

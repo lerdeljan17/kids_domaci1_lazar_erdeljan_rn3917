@@ -36,25 +36,29 @@ public class DirectoryCrawlerThread extends Thread {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    startJob = false;
+
 //                    jobFiles.clear();
                 }
-                System.out.println("Directory: " + file.getAbsolutePath());
+//                System.out.println("Directory: " + file.getAbsolutePath());
+                startJob = false;
                 jobFiles.clear();
                 crawl(file.listFiles());
             } else if (!file.isDirectory() && file.getParentFile().getName().startsWith(ApplicationProperties.getInstance().getPrefix())) {
-                Long lm = lastModifiedMap.putIfAbsent(file.getAbsolutePath(), file.lastModified());
+                Long lm = lastModifiedMap.put(file.getAbsolutePath(), file.lastModified());
                 jobFiles.add(file);
+//                if(lm !=null)
+//                    System.out.println(lm.equals(file.lastModified()));
                 if (lm == null || !lm.equals(file.lastModified())) {
                     // TODO: 3.4.2021. job treba startovati
                     startJob = true;
-                    System.out.println("start job");
+//                    System.out.println("start job");
+//                    System.out.println("lm " + lm  + file.getName());
                 } else {
                     // TODO: 3.4.2021. job ne treba statovati
-                    System.out.println("dont start job");
+//                    System.out.println("dont start job");
                 }
 
-                System.out.println("File: " + file.getAbsolutePath() + " lm: " + file.lastModified());
+//                System.out.println("File: " + file.getAbsolutePath() + " lm: " + file.lastModified());
             }
         }
     }

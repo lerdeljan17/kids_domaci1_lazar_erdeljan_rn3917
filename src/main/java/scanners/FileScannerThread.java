@@ -53,13 +53,13 @@ public class FileScannerThread extends  RecursiveTask<Map<String,Integer>> {
 
             }
 
-            System.out.println("rezzz2" + wordCountMap);
+//            System.out.println("rezzz2" + wordCountMap);
             return wordCountMap;
 
         }else {
 
             scanFiles(dividedFiles);
-            System.out.println("rezzz" + wordCountMap);
+//            System.out.println("rez za " + dividedFiles.get(0).getParent() + " "+ wordCountMap);
             return wordCountMap;
         }
 
@@ -84,16 +84,22 @@ public class FileScannerThread extends  RecursiveTask<Map<String,Integer>> {
         }
         while(file.hasNext()){
             String word=file.next();
-            word = word.replaceAll("[^a-zA-Z ]", "").toLowerCase();
+            word = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
+//            System.out.println("rec je " + word + " " + word.length());
+
             if(!ApplicationProperties.getInstance().getKeywords().contains(word)){
+              //  System.out.println(ApplicationProperties.getInstance().getKeywords());
+//                System.out.println("nema me");
                 continue;
             }
+
             Integer count=wordCountMap.get(word);
             if(count!=null)
                 count++;
             else
                 count=1;
             wordCountMap.put(word,count);
+
         }
         file.close();
     }

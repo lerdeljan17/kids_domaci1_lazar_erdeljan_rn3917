@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.Singleton;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -18,7 +20,7 @@ public class ApplicationProperties {
 
     private String prefix;
     private String dir_crawler_sleep_time;
-    private String keywords;
+    private List<String> keywords;
     private long file_scanning_size_limit;
 
 
@@ -52,7 +54,9 @@ public class ApplicationProperties {
         dir_crawler_sleep_time = new String();
         prefix = readProperty("file_corpus_prefix");
         dir_crawler_sleep_time = readProperty("dir_crawler_sleep_time");
-        keywords = readProperty("keywords");
+        String keyw = readProperty("keywords");
+        keywords = new ArrayList<>(Arrays.asList(keyw.split(",")));
+        System.out.println(keywords);
         file_scanning_size_limit = Long.parseLong(readProperty("file_scanning_size_limit"));
 
     }
