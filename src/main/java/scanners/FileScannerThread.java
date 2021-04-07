@@ -23,7 +23,6 @@ public class FileScannerThread extends  RecursiveTask<Map<String,Integer>> {
     @Override
     protected Map<String, Integer> compute() {
 
-
         System.out.println("computing for" + files.toString());
         List<File> dividedFiles = divideFiles(files);
 

@@ -3,6 +3,7 @@ package scanners;
 import main.Main;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class JobDispatcher extends Thread{
@@ -15,12 +16,17 @@ public class JobDispatcher extends Thread{
 
                 ScanningJob job = Main.jobs.take();
 
+
                 if(job.getType() == ScanType.FILE){
                     FileJob fileJob = (FileJob)job;
 
                     // TODO: 4.4.2021. stopping
                     if (fileJob.isPoison()){
                         System.out.println("-- Shutting down JobDispatcher");
+                        System.out.println("-- Shutting down FileScanner pool");
+                        Main.fileScannerPool.shutdown();
+                        System.out.println("-- Shutting down resultRetriever pool");
+                        Main.resultRetriever.getService().shutdown();
                         return;
                     }
                     // TODO: 5.4.2021. result
@@ -30,10 +36,20 @@ public class JobDispatcher extends Thread{
                     Main.resultRetriever.addCorpusResult(((FileJob) job).getCorpusName(),res);
                 }
 
+                if (job.getType() == ScanType.WEB){
+
+                    WebJob webJob = (WebJob)job;
+//                    System.out.println("JobDispatcher took a new job wit url: " + webJob.getUrl());
+                    Future<Map<String, Integer>> res = ((WebJob) job).initiateWeb(new WebScannerThead(webJob));
+                    Main.resultRetriever.addWebResult(((WebJob) job).getUrl(),res);
+
+                    System.out.println("res za web je " + ((WebJob) job).getUrl() + " " + res.get().toString());
+                }
 
 
 
-            } catch (InterruptedException e) {
+
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
 

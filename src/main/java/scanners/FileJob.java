@@ -39,7 +39,7 @@ public class FileJob implements ScanningJob {
 
     @Override
     public String getQuery() {
-        return corpusName;
+        return null;
     }
 
     @Override

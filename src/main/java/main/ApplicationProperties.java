@@ -22,6 +22,8 @@ public class ApplicationProperties {
     private String dir_crawler_sleep_time;
     private List<String> keywords;
     private long file_scanning_size_limit;
+    private int hop_count;
+    private long url_refresh_time;
 
 
     private ApplicationProperties() {
@@ -56,9 +58,10 @@ public class ApplicationProperties {
         dir_crawler_sleep_time = readProperty("dir_crawler_sleep_time");
         String keyw = readProperty("keywords");
         keywords = new ArrayList<>(Arrays.asList(keyw.split(",")));
-        System.out.println(keywords);
+//        System.out.println(keywords);
         file_scanning_size_limit = Long.parseLong(readProperty("file_scanning_size_limit"));
-
+        hop_count = Integer.parseInt(readProperty("hop_count"));
+        url_refresh_time = Long.parseLong(readProperty("url_refresh_time"));
     }
 
 }

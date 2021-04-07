@@ -3,6 +3,8 @@ package retriver;
 import lombok.Data;
 import scanners.ScanType;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -11,6 +13,11 @@ public class ResultRetriever {
 
     private Future<Map<String, Map<String, Integer>>> resultSummaryCache ;
     private Map<String, Future<Map<String, Integer>>> files = new ConcurrentHashMap<>();
+
+    private Map<String, Future<Map<String, Integer>>> webResults = new ConcurrentHashMap<>();
+    private Map<String, Future<Map<String, Integer>>> webDomainResults = new ConcurrentHashMap<>();
+
+
 //    private Future<Map<String, Map<String, Integer>>> summaryFiles;
     private ExecutorService service = Executors.newCachedThreadPool();
 //    private ExecutorCompletionService<Map<String, Map<String, Integer>>> summaryFilesPool ;
@@ -53,11 +60,29 @@ public class ResultRetriever {
 
             }
 
+        }else if(type.equals("web")){
+
+            Future<Map<String, Integer>> res = webDomainResults.get(parameter);
+
+            if (res == null) {
+
+                Future<Map<String, Integer>> domainRes = service.submit(new WebDomainSumTask(parameter));
+
+                webDomainResults.put(parameter, domainRes);
+
+                return domainRes.get();
+            }else {
+                return res.get();
+            }
+
+
         }
 
 
         return null;
     }
+
+
 
     public Map<String, Integer> queryResult(String query) throws Exception {
         String parameter;
@@ -208,6 +233,15 @@ public class ResultRetriever {
     public void addCorpusResult(String corpusName, Future<Map<String, Integer>> corpusResult) {
 
        files.put(corpusName,corpusResult);
+
+
+    }
+
+
+    public void addWebResult(String url, Future<Map<String, Integer>> corpusResult) {
+
+        webResults.put(url,corpusResult);
+
 
 
     }
