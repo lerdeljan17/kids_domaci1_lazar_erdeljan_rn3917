@@ -10,5 +10,6 @@ public interface ScanningJob {
     ScanType getType();
     String getQuery();
     Future<Map<String, Integer>>  initiate(RecursiveTask<?> task);
+    boolean isPoison();
 
 }

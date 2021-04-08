@@ -16,19 +16,23 @@ public class JobDispatcher extends Thread{
 
                 ScanningJob job = Main.jobs.take();
 
+                // TODO: 4.4.2021. stopping
+                if (job.isPoison()){
+                    System.out.println("-- Shutting down JobDispatcher");
+                    System.out.println("-- Shutting down FileScanner pool");
+                    Main.fileScannerPool.shutdown();
+                    System.out.println("-- Shutting down resultRetriever pool");
+                    Main.resultRetriever.getService().shutdown();
+                    Main.scheduledWebService.shutdown();
+                    Main.WebService.shutdown();
+                    System.out.println("-- Shutting down webService");
+                    return;
+                }
+
 
                 if(job.getType() == ScanType.FILE){
                     FileJob fileJob = (FileJob)job;
 
-                    // TODO: 4.4.2021. stopping
-                    if (fileJob.isPoison()){
-                        System.out.println("-- Shutting down JobDispatcher");
-                        System.out.println("-- Shutting down FileScanner pool");
-                        Main.fileScannerPool.shutdown();
-                        System.out.println("-- Shutting down resultRetriever pool");
-                        Main.resultRetriever.getService().shutdown();
-                        return;
-                    }
                     // TODO: 5.4.2021. result
                     System.out.println("JobDispatcher took a new job wit corpus name: " + fileJob.getCorpusName());
 //                    Future<Map<String,Integer>> result = Main.fileScannerPool.submit(new FileScannerThread(fileJob.getFilesToScan()));
@@ -43,13 +47,13 @@ public class JobDispatcher extends Thread{
                     Future<Map<String, Integer>> res = ((WebJob) job).initiateWeb(new WebScannerThead(webJob));
                     Main.resultRetriever.addWebResult(((WebJob) job).getUrl(),res);
 
-                    System.out.println("res za web je " + ((WebJob) job).getUrl() + " " + res.get().toString());
+//                    System.out.println("res za web je " + ((WebJob) job).getUrl() + " " + res.get().toString());
                 }
 
 
 
 
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 

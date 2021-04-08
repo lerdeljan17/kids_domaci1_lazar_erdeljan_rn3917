@@ -15,25 +15,26 @@ import java.util.concurrent.RecursiveTask;
 
 @Data
 @AllArgsConstructor
-//@EqualsAndHashCode
+@EqualsAndHashCode
 public class WebJob implements ScanningJob {
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WebJob webJob = (WebJob) o;
-        return this.url.equals(webJob.url);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        WebJob webJob = (WebJob) o;
+//        return this.url.equals(webJob.url);
+//    }
 
 
 
-//    @EqualsAndHashCode.Include
+    @EqualsAndHashCode.Include
     private String url;
     private ScanType type = ScanType.WEB;
     private int hopCount;
     private Future<Map<String,Integer>> jobResult;
     private boolean isPoison;
+    private boolean invalid;
 
     public WebJob(ScanType file,  boolean b, String name,int hopCount) {
         this.type = file;

@@ -50,6 +50,10 @@ public class DirectoryCrawlerThread extends Thread {
 //                    System.out.println(lm.equals(file.lastModified()));
                 if (lm == null || !lm.equals(file.lastModified())) {
                     // TODO: 3.4.2021. job treba startovati
+                    if (Main.resultRetriever.getResultSummaryCache() != null) {
+                        Main.resultRetriever.setResultSummaryCache(null);
+                    }
+
                     startJob = true;
 //                    System.out.println("start job");
 //                    System.out.println("lm " + lm  + file.getName());
@@ -76,7 +80,18 @@ public class DirectoryCrawlerThread extends Thread {
                     }
                     return;
                 }
-                File dir = new File(s);
+                File dir = null;
+                try {
+                    dir  = new File(s);
+                    if (!dir.exists() || !dir.canRead()){
+                        System.out.println("Can not open or find file with path " + s);
+                        continue;
+                    }
+                }catch (Exception e){
+                    System.out.println("Can not open or find file with path " + s);
+                    continue;
+                }
+
                 crawl(dir.listFiles());
             }
 

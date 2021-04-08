@@ -16,6 +16,7 @@ public class ResultRetriever {
 
     private Map<String, Future<Map<String, Integer>>> webResults = new ConcurrentHashMap<>();
     private Map<String, Future<Map<String, Integer>>> webDomainResults = new ConcurrentHashMap<>();
+    private Future<Map<String, Map<String, Integer>>> webResultSummaryCache ;
 
 
 //    private Future<Map<String, Map<String, Integer>>> summaryFiles;
@@ -62,6 +63,7 @@ public class ResultRetriever {
 
         }else if(type.equals("web")){
 
+
             Future<Map<String, Integer>> res = webDomainResults.get(parameter);
 
             if (res == null) {
@@ -69,9 +71,10 @@ public class ResultRetriever {
                 Future<Map<String, Integer>> domainRes = service.submit(new WebDomainSumTask(parameter));
 
                 webDomainResults.put(parameter, domainRes);
-
+//                System.out.println("rt1 " +domainRes.get());
                 return domainRes.get();
             }else {
+//                System.out.println("rt2 " +res.get());
                 return res.get();
             }
 
@@ -123,10 +126,34 @@ public class ResultRetriever {
                     throw new Exception("job not done yet");
                 }
             }
+        }else if(type.equals("web")){
 
+
+            Future<Map<String, Integer>> res = webDomainResults.get(parameter);
+
+            if (res == null) {
+
+                Future<Map<String, Integer>> domainRes = service.submit(new WebDomainSumTask(parameter));
+
+                webDomainResults.put(parameter, domainRes);
+//                System.out.println("rt1 " +domainRes.get());
+//                return domainRes.get();
+                throw new Exception("job not done yet");
+            }else {
+                if (res.isDone()){
+                    return res.get();
+                }else {
+                    throw new Exception("job not done yet");
+                }
+
+//                System.out.println("rt2 " +res.get());
+
+            }
 
 
         }
+
+
             return null;
         }
 
@@ -134,8 +161,10 @@ public class ResultRetriever {
 
         if(query.equals("cfs")){
             resultSummaryCache = null;
-            System.out.println("summaries cleared");
+        }else if (query.equals("cws")){
+            webResultSummaryCache = null;
         }
+        System.out.println("summaries cleared");
 
     }
 
@@ -178,6 +207,27 @@ public class ResultRetriever {
             if (!files.containsKey(parameter)) {
                 throw new Exception("Corpus not in jobs");
             }
+        }else if (type.equals("web")){
+
+            if (parameter.equals("summary")) {
+                if(webResults.isEmpty()){
+                    throw new Exception("no web pages to query");
+                }
+                if (webResultSummaryCache != null && webResultSummaryCache.isDone()) {
+//                    System.out.println(summaryFilesPool.take().get().toString());
+//                    resultSummaryCache.putAll(summaryFilesPool.take().get());
+                    return webResultSummaryCache.get();
+                } else {
+//                    summaryFilesPool = new ExecutorCompletionService<>(
+//                            service);
+                    webResultSummaryCache = service.submit(new WebCorpusSumTask());
+//                    System.out.println(summaryFilesPool.take().get());
+//                    resultSummaryCache.putAll(summaryFilesPool.take().get());
+                    return webResultSummaryCache.get();
+                }
+
+            }
+
         }
 
         return null;
@@ -225,6 +275,28 @@ public class ResultRetriever {
             if (!files.containsKey(parameter)) {
                 throw new Exception("Corpus not in jobs");
             }
+        }else if (type.equals("web")){
+
+            if (parameter.equals("summary")) {
+                if(webResults.isEmpty()){
+                    throw new Exception("no web pages to query");
+                }
+                if (webResultSummaryCache != null && webResultSummaryCache.isDone()) {
+//                    System.out.println(summaryFilesPool.take().get().toString());
+//                    resultSummaryCache.putAll(summaryFilesPool.take().get());
+                    return webResultSummaryCache.get();
+                } else {
+//                    summaryFilesPool = new ExecutorCompletionService<>(
+//                            service);
+                    webResultSummaryCache = service.submit(new WebCorpusSumTask());
+//                    System.out.println(summaryFilesPool.take().get());
+//                    resultSummaryCache.putAll(summaryFilesPool.take().get());
+//                    return webResultSummaryCache.get();
+                    throw new Exception("jobs not done yet");
+                }
+
+            }
+
         }
 
         return null;

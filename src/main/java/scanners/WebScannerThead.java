@@ -23,7 +23,19 @@ public class WebScannerThead implements Callable<Map<String,Integer>> {
     @Override
     public Map<String, Integer> call() throws Exception {
 
-        Document doc = Jsoup.connect(job.getUrl()).get();
+//        System.out.println(job.getUrl());
+
+        Document doc = null;
+        try {
+//            System.out.println(job.getUrl());
+           doc = Jsoup.connect(job.getUrl()).get();
+        }catch (Exception e){
+            System.out.println("Inaccessible url " + job.getUrl() + " -----");
+            job.setInvalid(true);
+            Main.resultRetriever.getWebResults().remove(job.getUrl());
+            return null;
+        }
+
         Elements links = doc.select("a[href]");
 //        System.out.println(links.size());
 
@@ -36,7 +48,10 @@ public class WebScannerThead implements Callable<Map<String,Integer>> {
 
         if(job.getHopCount() > 0){
             for (String url : urls) {
+                if (url == null || url.isEmpty() || url.isBlank())continue;
                 try {
+                    System.out.println("url iz petlje " + url);
+                    url = url.replaceAll(" ", "%20");
                     WebJob webJob = new WebJob(ScanType.WEB,false,url,job.getHopCount() - 1);
                     if (Main.cachedWebJobs.contains(webJob)){
                         System.out.println("Job with that url already exists");
@@ -67,7 +82,9 @@ public class WebScannerThead implements Callable<Map<String,Integer>> {
         }  catch (IOException e) {
             e.printStackTrace();
         }
-        while(file.hasNext()){
+        while(true){
+            assert file != null;
+            if (!file.hasNext()) break;
             String word=file.next();
             word = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
 //            System.out.println("rec je " + word + " " + word.length());
@@ -89,11 +106,11 @@ public class WebScannerThead implements Callable<Map<String,Integer>> {
 //        System.out.println(wordCountMap);
         return wordCountMap;
     }
-
-    public static void main(String[] args) {
-        countWords("https://en.wikipedia.org/wiki/Number");
-        countWords("https://en.wikipedia.org/wiki/Number");
-
-    }
+//
+//    public static void main(String[] args) {
+//        countWords("https://en.wikipedia.org/wiki/Number");
+//        countWords("https://en.wikipedia.org/wiki/Number");
+//
+//    }
 
 }

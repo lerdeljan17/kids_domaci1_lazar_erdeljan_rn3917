@@ -10,7 +10,7 @@ public class Main {
 
 
     //    static List<String> dirsToCrawl = new ArrayList<String>();
-    public static CopyOnWriteArrayList<String> dirsToCrawl = new CopyOnWriteArrayList();
+//    public static CopyOnWriteArrayList<String> dirsToCrawl = new CopyOnWriteArrayList();
     public static BlockingQueue<ScanningJob> jobs = new LinkedBlockingQueue<>();
     public static ForkJoinPool fileScannerPool;
     public static JobDispatcher jobDispatcher;
@@ -66,7 +66,7 @@ public class Main {
                 // add segment za DirectoryCrawlerThread
 
                 if(param == null){
-                    System.out.println("missing param dir");
+                    System.out.println("missing param argument");
                     continue;
                 }
 
@@ -78,8 +78,10 @@ public class Main {
 
             }else if (command.equals("get")){
                 // TODO: 6.4.2021. ako fali param
-//                System.out.println(resultRetriever.getResult(param));
-                if(param.contains("summary")){
+                if(param == null){
+                    System.out.println("missing param argument");
+                    continue;
+                }                if(param.contains("summary")){
                     try {
                         Map<String, Map<String, Integer>> r = resultRetriever.getSummary(param);
 //                    System.out.println(resultRetriever.getResult(param).toString());
@@ -106,6 +108,10 @@ public class Main {
                 }
 
             }else if (command.equals("query")){
+                if(param == null){
+                    System.out.println("missing param argument");
+                    continue;
+                }
                 if(param.contains("summary")){
                     try {
                         Map<String, Map<String, Integer>> r = resultRetriever.querySummary(param);
@@ -128,9 +134,13 @@ public class Main {
                     }
                 }
 
-            }else if (command.equals("cfs")){
+            }else if (command.equals("cfs")||command.equals("cws")){
                 resultRetriever.clearSummary(command);
             }else if (command.equals("aw")){
+                if(param == null){
+                    System.out.println("missing param argument");
+                    continue;
+                }
 //                System.out.println(param);
                 if(param == null){
                     System.err.println("Missing parameter");
@@ -150,8 +160,9 @@ public class Main {
                 System.out.println("Not a command");
             }
 
-            scheduledWebService.schedule(new WebResultRemoverTask(),ApplicationProperties.getInstance().getUrl_refresh_time(), TimeUnit.MILLISECONDS);
+//            scheduledWebService.schedule(new WebResultRemoverTask(),ApplicationProperties.getInstance().getUrl_refresh_time(), TimeUnit.MILLISECONDS);
         }
+        System.out.println("izaso");
         sc.close();
 
 
