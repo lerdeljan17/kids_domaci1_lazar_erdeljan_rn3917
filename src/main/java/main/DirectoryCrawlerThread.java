@@ -95,13 +95,21 @@ public class DirectoryCrawlerThread extends Thread {
                 crawl(dir.listFiles());
             }
 
-            try {
-//                System.out.println("-- DirectoryCrawlerThread going to sleep");
-                // TODO: 4.4.2021. *10 da bi sporije islo izbrisati
-                Thread.sleep(Long.parseLong(ApplicationProperties.getInstance().getDir_crawler_sleep_time())*10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+//            try {
+////                System.out.println("-- DirectoryCrawlerThread going to sleep");
+//                // TODO: 4.4.2021. *10 da bi sporije islo izbrisati
+//                Thread.sleep(Long.parseLong(ApplicationProperties.getInstance().getDir_crawler_sleep_time())*10);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            long time = System.currentTimeMillis();
+            while (true){
+                if(System.currentTimeMillis() >=
+                        time+Long.parseLong(ApplicationProperties.getInstance().getDir_crawler_sleep_time())){
+                    break;
+                }
             }
+
 
         }
 
