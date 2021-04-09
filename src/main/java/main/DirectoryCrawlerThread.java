@@ -96,7 +96,7 @@ public class DirectoryCrawlerThread extends Thread {
             }
 
             try {
-                System.out.println("-- DirectoryCrawlerThread going to sleep");
+//                System.out.println("-- DirectoryCrawlerThread going to sleep");
                 // TODO: 4.4.2021. *10 da bi sporije islo izbrisati
                 Thread.sleep(Long.parseLong(ApplicationProperties.getInstance().getDir_crawler_sleep_time())*10);
             } catch (InterruptedException e) {

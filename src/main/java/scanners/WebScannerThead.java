@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 @Data
 @AllArgsConstructor
@@ -50,11 +51,11 @@ public class WebScannerThead implements Callable<Map<String,Integer>> {
             for (String url : urls) {
                 if (url == null || url.isEmpty() || url.isBlank())continue;
                 try {
-                    System.out.println("url iz petlje " + url);
+//                    System.out.println("url iz petlje " + url);
                     url = url.replaceAll(" ", "%20");
                     WebJob webJob = new WebJob(ScanType.WEB,false,url,job.getHopCount() - 1);
                     if (Main.cachedWebJobs.contains(webJob)){
-                        System.out.println("Job with that url already exists");
+//                        System.out.println("Job with that url already exists");
                         continue;
                     }
                     Main.cachedWebJobs.add(webJob);
@@ -65,6 +66,8 @@ public class WebScannerThead implements Callable<Map<String,Integer>> {
             }
         }
 
+
+        Main.scheduledWebService.schedule(new WebResultRemoverTask(job),ApplicationProperties.getInstance().getUrl_refresh_time(), TimeUnit.MILLISECONDS);
 
 
         return countWords(job.getUrl());

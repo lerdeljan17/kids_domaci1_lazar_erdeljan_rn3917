@@ -162,7 +162,7 @@ public class Main {
 
 //            scheduledWebService.schedule(new WebResultRemoverTask(),ApplicationProperties.getInstance().getUrl_refresh_time(), TimeUnit.MILLISECONDS);
         }
-        System.out.println("izaso");
+//        System.out.println("izaso");
         sc.close();
 
 

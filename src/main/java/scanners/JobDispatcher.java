@@ -23,7 +23,8 @@ public class JobDispatcher extends Thread{
                     Main.fileScannerPool.shutdown();
                     System.out.println("-- Shutting down resultRetriever pool");
                     Main.resultRetriever.getService().shutdown();
-                    Main.scheduledWebService.shutdown();
+                    // TODO: 9.4.2021. mozda shutdownNow
+                    Main.scheduledWebService.shutdownNow();
                     Main.WebService.shutdown();
                     System.out.println("-- Shutting down webService");
                     return;
